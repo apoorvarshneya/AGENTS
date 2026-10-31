@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent Office</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--floor:#e6ebe8;--card:#f6f8f7;--ink:#14302f;--mute:#5b7370;--wall:#9fb3ae;--acc:#2455d6;--amb:#e0a21c;--ok:#1f8a5b;--bad:#c63d3d;--bar:#d3dcd8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--floor:#0e1b1a;--card:#152727;--ink:#dcebe7;--mute:#8fa9a4;--wall:#3d5955;--acc:#6f95ff;--amb:#f0b83a;--ok:#4cc58c;--bad:#ef6b6b;--bar:#243b3a}}
+:root[data-theme="dark"]{--floor:#0e1b1a;--card:#152727;--ink:#dcebe7;--mute:#8fa9a4;--wall:#3d5955;--acc:#6f95ff;--amb:#f0b83a;--ok:#4cc58c;--bad:#ef6b6b;--bar:#243b3a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--floor);color:var(--ink);font:400 15px/1.5 Figtree,system-ui,sans-serif}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif;margin:0;line-height:1.15}
+h1{font-size:30px;font-weight:700}h2{font-size:18px;font-weight:600;margin-bottom:10px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between;padding:20px 20px 8px}
+.sub{margin:4px 0 0;color:var(--mute);font-size:14px}
+.ctl{display:flex;gap:14px;align-items:center;font-size:14px;color:var(--mute)}
+nav{display:flex;gap:6px;padding:8px 20px}
+nav button{font:inherit;font-weight:500;border:2px solid var(--wall);background:none;color:var(--ink);padding:6px 14px;border-radius:999px;cursor:pointer}
+nav button.on{background:var(--ink);color:var(--floor);border-color:var(--ink)}
+.wrap{display:grid;gap:16px;padding:8px 20px 28px;grid-template-columns:minmax(0,340px) minmax(0,1fr);align-items:start}
+@media(max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--wall);border-radius:10px;padding:16px}
+textarea,select,input{font:inherit;color:var(--ink);background:var(--floor);border:1px solid var(--wall);border-radius:6px;padding:8px;width:100%}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 0}label select{margin-top:4px}
+.ctl select{width:auto;padding:4px 6px}
+.go{margin-top:14px;width:100%;font:inherit;font-weight:700;background:var(--acc);color:#fff;border:0;border-radius:6px;padding:11px;cursor:pointer}
+:where(button,select,textarea,a):focus-visible{outline:3px solid var(--amb);outline-offset:2px}
+#floor{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));padding:14px;border-radius:6px;background:repeating-linear-gradient(0deg,transparent 0 23px,var(--bar) 23px 24px),repeating-linear-gradient(90deg,transparent 0 23px,var(--bar) 23px 24px)}
+.room{background:var(--card);border:3px solid var(--wall);border-radius:4px;padding:10px;min-height:150px;display:flex;flex-direction:column;gap:6px;transition:border-color .3s,box-shadow .3s}
+.room.mgr{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center;gap:14px}
+.room.work{border-color:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 22%,transparent)}
+.room b{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-size:16px}
+.desk{font-size:30px;line-height:1}.model{font-size:12px;color:var(--mute)}
+.st{font-size:13px;flex:1}.idle{color:var(--mute)}
+.bar{height:6px;background:var(--bar);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+.t{border-top:1px solid var(--wall);padding:12px 0}.t:first-child{border:0;padding-top:0}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;border:1.5px solid currentColor}
+.ok{color:var(--ok)}.warn{color:var(--amb)}.bad{color:var(--bad)}.run{color:var(--acc)}
+.steps{display:flex;gap:4px;margin:8px 0 4px}.steps span{flex:1;font-size:11px;color:var(--mute);text-align:center}
+.steps u{display:block;height:6px;border-radius:3px;background:var(--bar);text-decoration:none;margin-bottom:2px}
+.steps .d u{background:var(--ok)}.steps .w u{background:var(--acc)}
+#log{max-height:220px;overflow:auto;font-size:13px}#log p{margin:0 0 5px}#log em{font-style:normal;color:var(--mute)}
+.tools{display:grid;gap:16px;padding:8px 20px 28px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.tools ul{list-style:none;margin:0;padding:0}.tools li{padding:6px 0;border-top:1px solid var(--bar);font-size:14px}
+.tools a{color:var(--acc);font-weight:700}.tools small{display:block;color:var(--mute)}
+.note{grid-column:1/-1;color:var(--mute);font-size:14px;max-width:70ch}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<header><div><h1>Agent Office</h1><p class="sub">Send work to the manager, set a deadline, watch your team deliver. Demo mode: agents are simulated.</p></div>
+<div class="ctl"><span id="clk"></span><label style="margin:0">Speed <select id="spd"><option value="0">Paused</option><option value="1">1×</option><option value="60">60×</option><option value="600" selected>600×</option><option value="3000">3000×</option></select></label></div></header>
+<nav><button class="on" data-t="o">Office</button><button data-t="k">Tools and APIs</button></nav>
+<div class="wrap" id="o">
+<div class="col">
+<section class="card"><h2>Request to manager</h2>
+<label for="ttl" style="margin-top:0">What should the team build?</label>
+<textarea id="ttl" rows="4">Build a route-optimisation page with a map, destination picker and ETA</textarea>
+<label for="dl">Deadline</label>
+<select id="dl"><option value="1">1 hour</option><option value="4" selected>4 hours</option><option value="8">8 hours</option><option value="24">1 day</option><option value="72">3 days</option><option value="168">1 week</option></select>
+<button class="go" id="go">Send to manager</button></section>
+<section class="card"><h2>Tasks and deadlines</h2><div id="tasks"></div></section>
+</div>
+<div class="col">
+<section class="card"><h2>Office floor</h2><div id="floor"></div></section>
+<section class="card"><h2>Activity</h2><div id="log"></div></section>
+</div></div>
+<div class="tools" id="k" hidden>
+<p class="note">Pick which AI each agent uses (saved in this browser). Real API keys never belong in a web page: put them in your backend’s environment file and let the manager service call the providers. Free tiers and limits change often, so check each provider before relying on them.</p>
+<section class="card" style="grid-column:1/-1"><h2>Assign an AI to each agent</h2><div id="cfg" style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))"></div></section>
+<section class="card"><h2>AI model providers</h2><ul id="llm"></ul></section>
+</div>
+<script>
+const A={mgr:['Manager','🧑‍💼'],rnd:['R&D','🔬'],ux:['UI/UX','🎨'],fe:['Frontend','🖥️'],be:['Backend','🗄️'],qa:['QA','🧪']};
+const PLAN=[['rnd','Research options and feasibility',.12,[]],['ux','Design flows and wireframes',.15,['rnd']],['be','Build API and database',.3,['rnd']],['fe','Build the interface',.25,['ux']],['qa','Test and report bugs',.15,['fe','be']],['mgr','Review and sign off',.05,['qa']]];
+const MODELS=['Gemini (free tier)','Groq (free tier)','OpenRouter (free models)','Mistral (free tier)','Ollama (local, free)','Claude or GPT (paid)'];
+const TOOLS={'Manager and orchestration':[['LangGraph','Free, open source','https://langchain-ai.github.io/langgraph/'],['CrewAI','Free, open source','https://www.crewai.com'],['LiteLLM','Free, one API for many models','https://docs.litellm.ai'],['Langfuse','Free tier or self-host, tracks progress and cost','https://langfuse.com']],
+'R&D':[['Tavily','Free tier, web search API','https://tavily.com'],['Exa','Free credits, semantic search','https://exa.ai'],['Firecrawl','Free tier, reads documentation sites','https://www.firecrawl.dev'],['GitHub API','Free, repository research','https://docs.github.com/en/rest']],
+'UI/UX':[['Penpot','Free, open-source design tool','https://penpot.app'],['Figma','Free starter plan','https://www.figma.com'],['shadcn/ui','Free component library','https://ui.shadcn.com'],['v0','Small free allowance, paid beyond','https://v0.dev']],
+'Frontend':[['Next.js','Free','https://nextjs.org'],['Playwright','Free, browser automation','https://playwright.dev'],['Storybook','Free, component testing','https://storybook.js.org'],['Vercel','Free hobby tier for hosting','https://vercel.com']],
+'Backend':[['FastAPI','Free','https://fastapi.tiangolo.com'],['Supabase','Free tier, database and login','https://supabase.com'],['Neon','Free tier, Postgres','https://neon.tech'],['Docker','Free, sandboxed code runs','https://www.docker.com']],
+'QA':[['Playwright','Free, end-to-end tests','https://playwright.dev'],['pytest','Free, Python tests','https://pytest.org'],['Vitest','Free, JavaScript tests','https://vitest.dev'],['GitHub Actions','Free tier, automatic test runs','https://github.com/features/actions']]};
+const LLM=[['Google Gemini (AI Studio)','Free tier','https://aistudio.google.com'],['Groq','Free tier, very fast','https://console.groq.com'],['OpenRouter','Some free models, one key for many','https://openrouter.ai'],['Mistral','Free experimentation tier','https://console.mistral.ai'],['Ollama','Free, runs on your own computer','https://ollama.com'],['Anthropic and OpenAI','Paid API, strongest at coding','https://console.anthropic.com']];
+const $=id=>document.getElementById(id),esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cfg={mgr:0,rnd:0,ux:0,fe:4,be:4,qa:1};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('ao-cfg')||'{}'))}catch(e){}
+let sim=Date.now(),speed=600,seq=0,tasks=[],logs=[];
+const dur=ms=>{const m=Math.max(0,Math.round(ms/60000));return m>=1440?Math.floor(m/1440)+'d '+Math.floor(m%1440/60)+'h':m>=60?Math.floor(m/60)+'h '+m%60+'m':m+'m'};
+const at=ms=>new Date(ms).toLocaleString([],{weekday:'short',hour:'2-digit',minute:'2-digit'});
+function log(a,msg){logs.unshift(`<p><em>${at(sim)}</em> <b>${A[a][0]}</b> ${esc(msg)}</p>`);logs.length=Math.min(logs.length,60)}
+function addTask(){const title=$('ttl').value.trim();if(!title){$('ttl').focus();return}
+ const T=$('dl').value*3600e3,span=T*(.6+Math.random()*.55)/.72;
+ tasks.push({id:++seq,title,t0:sim,dl:sim+T,eta:sim+span*.72,od:false,done:false,subs:PLAN.map(([a,d,f,dep])=>({a,d,dur:span*f,dep,p:0,st:'waiting'}))});
+ log('mgr',`Planned “${title}” into ${PLAN.length} tasks. Deadline in ${dur(T)}.`);render()}
+function tick(){if(!speed)return;const dt=250*speed;sim+=dt;const busy=new Set();
+ tasks.forEach(t=>t.subs.forEach(s=>s.st==='working'&&busy.add(s.a)));
+ tasks.forEach(t=>{if(t.done)return;
+  t.subs.forEach(s=>{
+   if(s.st==='waiting'&&!busy.has(s.a)&&s.dep.every(a=>t.subs.find(x=>x.a===a).st==='done')){s.st='working';busy.add(s.a);log(s.a,`started: ${s.d}`)}
+   if(s.st==='working'){s.p+=dt/s.dur;if(s.p>=1){s.p=1;s.st='done';busy.delete(s.a);log(s.a,`finished: ${s.d}`)}}});
+  if(t.subs.every(s=>s.st==='done')){t.done=true;t.fin=sim;log('mgr',`Delivered “${t.title}” ${sim<=t.dl?'on time':'late by '+dur(sim-t.dl)}.`)}
+  else if(sim>t.dl&&!t.od){t.od=true;log('mgr',`Warning: “${t.title}” passed its deadline.`)}});
+ render()}
+function chip(t){if(t.done)return t.fin<=t.dl?'<span class="chip ok">Delivered on time</span>':'<span class="chip bad">Delivered late</span>';
+ if(sim>t.dl)return'<span class="chip bad">Overdue</span>';return t.eta>t.dl?'<span class="chip warn">At risk</span>':'<span class="chip run">On track</span>'}
+function render(){$('clk').textContent=at(sim);
+ $('floor').innerHTML=Object.keys(A).map(a=>{let cur=null,ct=null,q=0;
+  tasks.forEach(t=>t.subs.forEach(s=>{if(s.a!==a||t.done)return;if(s.st==='working'){cur=s;ct=t}else if(s.st==='waiting'&&s.dep.every(d=>t.subs.find(x=>x.a===d).st==='done'))q++}));
+  return`<div class="room ${a==='mgr'?'mgr':''} ${cur?'work':''}"><div class="desk">${A[a][1]}</div><div><b>${A[a][0]}</b><div class="model">${MODELS[cfg[a]]}</div></div>
+  <div class="st ${cur?'':'idle'}">${cur?esc(cur.d)+' for “'+esc(ct.title.slice(0,40))+'”':'Idle, waiting for work'}${q?` (${q} queued)`:''}</div>
+  ${cur?`<div class="bar" style="${a==='mgr'?'width:140px':''}"><i style="width:${Math.round(cur.p*100)}%"></i></div>`:''}</div>`}).join('');
+ $('tasks').innerHTML=tasks.length?tasks.slice().reverse().map(t=>{const done=t.subs.filter(s=>s.st==='done').length;
+  return`<div class="t"><b>${esc(t.title)}</b><div style="margin:4px 0">${chip(t)} <span class="model">${t.done?'':'Due '+at(t.dl)+' (in '+dur(t.dl-sim)+'), estimate '+at(t.eta)}</span></div>
+  <div class="steps">${t.subs.map(s=>`<span class="${s.st==='done'?'d':s.st==='working'?'w':''}"><u></u>${A[s.a][0]}</span>`).join('')}</div>
+  <div class="model">${done} of ${t.subs.length} steps complete</div></div>`}).join(''):'<p class="idle">No tasks yet. Send your first request to the manager.</p>';
+ $('log').innerHTML=logs.join('')||'<p class="idle">Agent activity will appear here.</p>'}
+$('go').onclick=addTask;
+$('spd').onchange=e=>{speed=+e.target.value};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));$('o').hidden=b.dataset.t!=='o';$('k').hidden=b.dataset.t!=='k'});
+$('cfg').innerHTML=Object.keys(A).map(a=>`<label style="margin:0">${A[a][1]} ${A[a][0]}<select data-a="${a}">${MODELS.map((m,i)=>`<option value="${i}" ${cfg[a]===i?'selected':''}>${m}</option>`).join('')}</select></label>`).join('');
+$('cfg').onchange=e=>{cfg[e.target.dataset.a]=+e.target.value;try{localStorage.setItem('ao-cfg',JSON.stringify(cfg))}catch(x){}render()};
+$('llm').innerHTML=LLM.map(([n,d,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${n}</a><small>${d}</small></li>`).join('');
+$('k').insertAdjacentHTML('beforeend',Object.entries(TOOLS).map(([r,l])=>`<section class="card"><h2>${r}</h2><ul>${l.map(([n,d,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${n}</a><small>${d}</small></li>`).join('')}</ul></section>`).join(''));
+render();setInterval(tick,250);
+</script></body></html>
